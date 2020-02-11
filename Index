@@ -1,0 +1,127 @@
+<?php
+
+
+function imprime()
+{
+
+
+    $curl = curl_init();
+
+
+    $limitpage = 500;
+
+
+
+    for ($id_municipio = 1; $id_municipio <= 20000; $id_municipio++) {
+        $v = true;
+        $offset = 0;
+        $c = 0;
+
+        var_dump($id_municipio);
+        if ($id_municipio == 1 || $id_municipio >= 16770) {//Pula intervalo vazio de 1 a 16770,onde nao existe nehum cidade
+            while ($v==true) {
+
+
+
+                $offset = ($limitpage * $c);
+                curl_setopt_array($curl, array(
+
+                    CURLOPT_URL => "http://www.portaltransparencia.gov.br/beneficios/bolsa-familia/resultado?paginacaoSimples=true&tamanhoPagina=$limitpage&offset=$offset&direcaoOrdenacao=asc&colunaOrdenacao=beneficiario&colunasSelecionadas=linkDetalhamento%2Cuf%2Cmunicipio%2Ccpf%2Cnis%2Cbeneficiario%2CvalorTotalPeriodo&de=01%2F01%2F2018&ate=01%2F12%2F2018&municipio=$id_municipio&_=1555089655940",
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => "",
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 300,// Número máximo de segundos para permitir que funções cURL sejam executadas.
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => "GET",
+                    CURLOPT_HTTPHEADER => array(
+                        "Cache-Control: no-cache",
+                        "Postman-Token: 3d35c8d6-fb26-f457-e1e8-522c59324b6a"
+                    ),
+                ));
+
+
+                $response = curl_exec($curl);
+                //var_dump($response);
+                $json = json_decode($response, 1);//decodifica o JSON
+
+                if (is_array($json) && isset($json["data"])&& is_array($json["data"]) && count($json["data"]) >0 ) {
+
+
+
+
+
+
+                    foreach ($json["data"] as $p) {//pega os elementos do JSON por meio de variaveis
+                        //$p=$json["data"];
+                        //echo($p->recordsTotal);
+                        //$recor=$p["recordsTotal"];
+                        $uf = $p["uf"];
+
+                        $municipio = $p["municipio"];
+
+                        $beneficiario = $p["beneficiario"];
+
+                        $cpf = $p["cpf"];
+
+                        $nis = $p["nis"];
+
+                        $id_titular = $p["skTitularBolsaFamilia"];
+
+                        $valor_recebido = $p["valorTotalPeriodo"];
+
+                        $sk = $p["skMunicipio"];
+
+
+                        echo("UF:" . $uf . " \n");
+                        echo("MUNICIPIO:" . $municipio . " \n");
+                        echo("BENEFICIARIO:" . $beneficiario . " \n");
+                        echo("CPF:" . $cpf . " \n");
+                        echo("NIS:" . $nis . " \n");
+                        echo("ID do TITULAR:" . $id_titular . " \n");
+                        echo("VALOR TOTAL DO PERIODO:" . $valor_recebido . " \n");
+                        echo("ID do MUNICIPIO:" . $sk . " \n");
+                        echo(" \n");
+                        echo(" \n");
+                    };
+
+
+
+                } else {
+                    // var_dump("parar aqui");
+                    $v= false;
+
+                };
+
+
+                /*} else {
+                    $v = false;
+                 return $v;
+
+
+                if (end($json['data'])) {
+
+
+                    return false;
+                };*/
+                $c++;
+
+            };
+
+        };
+
+
+
+
+    };
+
+
+}
+
+;
+
+
+//$id_municipio++;
+// };
+
+
+imprime();
